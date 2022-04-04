@@ -1,4 +1,5 @@
 # URL shortener
+A simple URL shortener with a REST API that follows the [JSend](https://github.com/omniti-labs/jsend) specification.
 
 ## Requirements
 * Python 3.10 with pip

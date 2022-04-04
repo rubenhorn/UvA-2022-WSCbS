@@ -1,12 +1,20 @@
 from flask import Flask, request, Response
-from markupsafe import escape
+import json
 import validators
 import werkzeug.exceptions
 
 app = Flask(__name__)
 
+# ==================== UTILS ====================
+
+mimetype = 'application/json'
+
 def is_url_valid(url):
-    return validators.url(url)
+    return url is not None and validators.url(url)
+
+def create_unique_url(user):
+    # TODO implement
+    raise NotImplementedError
 
 def get_user(request):
     header_key = 'Authorization'
@@ -14,52 +22,79 @@ def get_user(request):
     # TODO exctract user from JWT
     return user
 
-mimetype = 'application/json'
+def get_error_response(status_code, message):
+    json_data = {'status': 'error', 'data': {'message': message}}
+    return Response(json.dumps(json_data), status_code, mimetype=mimetype)
 
-def get_key(user, id):
-    pass
+def get_data_response(status_code, data):
+    json_data = {'status': 'success', 'data': data}
+    return Response(json.dumps(json_data), status_code, mimetype=mimetype)
 
-def update_key(user, id, new_url):
-    pass
+def url_from_request(request):
+    try:
+        return request.json['url']
+    except Exception:
+        return None
 
-def delete_key(user, id):
-    pass
+# ==================== PARTIAL ROUTES ====================
+
+def get_url(user, key):
+    # TODO implement
+    return get_error_response(404, 'Not found')
+
+def update_url(user, key, new_url):
+    if not is_url_valid(new_url):
+        return get_error_response(400, 'Invalid URL')
+    return get_error_response(404, 'Not found')
+
+def delete_url(user, key):
+    # TODO implement
+    return get_error_response(404, 'Not found')
 
 def get_keys(user):
-    print(f'getting keys for user {user}')
-    return 'Foo'
+    # TODO implement
+    return get_data_response(200, { 'keys': [] })
 
-def create_key(user, url):
-    pass
+def create_url(user, url):
+    if not is_url_valid(url):
+        return get_error_response(400, 'Invalid URL')
+    # TODO implement
+    return get_data_response(201, 'TODO')
 
-# ================== ROUTES ====================
+# ==================== ROUTES ====================
 
-@app.route('/<id>', methods=['GET', 'PUT', 'DELETE'])
-def key(id):
+@app.route('/<key>', methods=['GET', 'PUT', 'DELETE'])
+def route_url(key):
     user = get_user(request)
-    status = 200
-    if(not is_url_valid(id)):
-        data = {'error': 'Invalid URL'}
-        status = 400
+    if user is None:
+        res = get_error_response(401, 'Unauthorized')
     else:
         match request.method:
             case 'GET':
-                data, status = get_key(user, id)
+                res = get_url(user, key)
             case 'PUT':
-                data, status = update_key(user, id)
+                url = url_from_request(request)
+                res = update_url(user, key, url)
             case 'DELETE':
-                data, status = delete_key(user, id)
-    return Response(data, mimetype = mimetype, status=status)
+                res = delete_url(user, key)
+            case _:
+                raise werkzeug.exceptions.InternalServerError('Unhandled case')
+    return res
 
 @app.route('/', methods=['GET', 'POST', 'DELETE'])
-def keys():
+def route_keys():
     user = get_user(request)
-    status = 200
-    match request.method:
-        case 'GET':
-            data, status = get_keys(user)
-        case 'PUT':
-            data, status = create_key(user)
-        case 'DELETE':
-            raise werkzeug.exceptions.NotFound()
-    return Response(data, mimetype = mimetype, status=status)
+    if user is None:
+        res = get_error_response(401, 'Unauthorized')
+    else:
+        match request.method:
+            case 'GET':
+                res = get_keys(user)
+            case 'POST':
+                url = url_from_request(request)
+                res = create_url(user, url)
+            case 'DELETE':
+                res = get_error_response(404, 'Nothing to delete')
+            case _:
+                raise werkzeug.exceptions.InternalServerError('Unhandled case')
+    return res
