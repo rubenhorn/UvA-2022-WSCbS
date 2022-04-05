@@ -8,6 +8,8 @@ class TestBase:
     def client(self):
         from server import app
         app.config['TESTING'] = True
+        app.config['DEFAULT_USER'] = None
+        app.config['EPHEMERAL'] = True # Do not use persistent storage for testing
         client = app.test_client()
         yield client
 
