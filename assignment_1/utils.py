@@ -1,5 +1,6 @@
 from flask import Response
 import json
+import uuid
 import validators
 
 mimetype = 'application/json'
@@ -12,9 +13,8 @@ def get_config(app, key, default=None):
 def is_url_valid(url):
     return url is not None and validators.url(url)
 
-def create_unique_url(user):
-    # TODO implement
-    raise NotImplementedError
+def create_unique_id():
+    return uuid.uuid4().hex[:8]
 
 def get_user(request, default=None):
     header_key = 'Authorization'
@@ -31,6 +31,9 @@ def get_error_response(status_code, message):
 def get_data_response(status_code, data):
     json_data = {'status': 'success', 'data': data}
     return Response(json.dumps(json_data), status_code, mimetype=mimetype)
+
+def get_redirect_response(url):
+    return Response(status=301, mimetype=mimetype, headers={'Location': url})
 
 def url_from_request(request):
     try:
