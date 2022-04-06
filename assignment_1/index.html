@@ -11,15 +11,25 @@
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script type="text/babel">
         const baseUrl = 'http://localhost:5000'
+        const params = new URLSearchParams(window.location.search);
+        let username = params.get('username');
+
+        function setUsername(username) {
+            window.location = window.location.origin + window.location.pathname + '?username=' + username;
+        }
+
+        if(username == null) {
+            setUsername('alice');
+        }
 
         const UserField = (props) => { 
-            let [username, setUsername] = React.useState(props.username);
+            let [newUsername, setNewUsername] = React.useState(username);
             return (
                 <React.Fragment>
-                    <h2>Username:</h2>
-                    <input defaultValue={ username } onChange={ (e) => setUsername(e.target.value) } />
+                    <h2>Username: { username }</h2>
+                    <input defaultValue={ newUsername } onChange={ (e) => setNewUsername(e.target.value) } />
                     &nbsp;
-                    <button onClick={ () => props.setUsername(username) } >Set</button>
+                    <button onClick={ () => setUsername(newUsername) } >Set</button>
                 </React.Fragment>
             );
         };
@@ -30,7 +40,7 @@
             let [destinationURL, setDestinationURL] = React.useState(props.url);
 
             const removeURL = () => {
-                fetch(url, { method: 'DELETE', headers: { 'Authorization': props.username }})
+                fetch(url, { method: 'DELETE', headers: { 'Authorization': username }})
                     .then(data => props.reloadUrls());
             };
 
@@ -45,7 +55,7 @@
             const toggleEditing = () => {
                 if(isEditing) {
                     let payload = JSON.stringify({ url: destinationURL });
-                    fetch(url, { method: 'PUT', headers: { 'Authorization': props.username, 'Content-Type': 'application/json' }, body: payload })
+                    fetch(url, { method: 'PUT', headers: { 'Authorization': username, 'Content-Type': 'application/json' }, body: payload })
                         .then(data => props.reloadUrls());
                 }
                 setIsEditing(!isEditing);
@@ -69,7 +79,7 @@
             const inputRef = React.useRef(null);
             const addUrl = () => {
                 const payload = JSON.stringify({ url: url });
-                fetch(baseUrl + '/', { method: 'POST', headers: { 'Authorization': props.username, 'Content-Type': 'application/json' }, body: payload })
+                fetch(baseUrl + '/', { method: 'POST', headers: { 'Authorization': username, 'Content-Type': 'application/json' }, body: payload })
                     .then(data => {
                         inputRef.current.value = '';
                         props.reloadUrls()
@@ -86,7 +96,6 @@
         };
 
         const App = () => {
-            let [username, setUsername] = React.useState('alice');
             let [keysAndURLs, setKeysAndURLs] = React.useState([]);
 
             const loadUrls = () => {
@@ -104,7 +113,7 @@
             return (
                 <div className="App">
                     <h1 key={ 'h1' }>URL shortener</h1>
-                    <UserField username={ username } setUsername={ setUsername } key={ 'input_user' } />
+                    <UserField key={ 'input_user' } />
                     <h2 key={ 'h2_urls' }>Your URLs:</h2>
                     <ul key={ 'urls' }>{ urls }</ul>
                     <URLField username={ username } reloadUrls={ loadUrls } key={ 'input_url' } />
