@@ -3,20 +3,27 @@ import pytest
 import tempfile
 
 def _test_crud_url(db):
-    db.put_url('user/key', 'http://example.com')
-    assert db.has_url('user/key') is True
-    assert db.get_url('user/key') == 'http://example.com'
-    db.delete_url('user/key')
-    assert db.get_url('user/key') is None
-    assert db.has_url('user/key') is False
+    db.put_url_and_user('key', 'http://example.com', 'user')
+    assert db.has_url('key') is True
+    assert db.get_url_and_user('key') == ('http://example.com', 'user')
+    db.delete_url('key')
+    assert db.get_url_and_user('key') is None
+    assert db.has_url('key') is False
 
 def _test_scan_keys(db):
-    db.put_url('alice/key1', 'http://example.com')
-    db.put_url('alice/key2', 'http://example.com')
-    db.put_url('alice/key3', 'http://example.com')
-    db.put_url('bob/key1', 'http://example.com')
-    db.put_url('bob/key2', 'http://example.com')
-    assert db.scan_keys(lambda key: key.startswith('alice')) == ['alice/key1', 'alice/key2', 'alice/key3']
+    db.put_url_and_user('key_http_1', 'http://example.com', 'charlie')
+    db.put_url_and_user('key_http_2', 'http://example.com', 'charlie')
+    db.put_url_and_user('key_https_1', 'https://example.com', 'charlie')
+    db.put_url_and_user('key_https_2', 'https://example.com', 'charlie')
+    assert db.scan(lambda key, _: key.startswith('key_https')) == ['key_https_1', 'key_https_2']
+
+def _test_scan_values(db):
+    db.put_url_and_user('key1', 'http://example.com', 'alice')
+    db.put_url_and_user('key2', 'http://example.com', 'alice')
+    db.put_url_and_user('key3', 'http://example.com', 'alice')
+    db.put_url_and_user('key4', 'http://example.com', 'bob')
+    db.put_url_and_user('key5', 'http://example.com', 'bob')
+    assert db.scan(lambda _, value: value[1] == 'alice') == ['key1', 'key2', 'key3']
 
 class TestRepositoryInMemory:
     @pytest.fixture
@@ -30,6 +37,9 @@ class TestRepositoryInMemory:
     def test_scan_keys(self, db):
         _test_scan_keys(db)
 
+    def test_scan_values(self, db):
+        _test_scan_values(db)
+
 class TestRepositoryShelve:
     @pytest.fixture
     def db(self):
@@ -40,8 +50,11 @@ class TestRepositoryShelve:
 
     def test_crud_url(self, db):
         _test_crud_url(db)
-
+    
     def test_scan_keys(self, db):
         _test_scan_keys(db)
+
+    def test_scan_values(self, db):
+        _test_scan_values(db)
 
 
