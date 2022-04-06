@@ -19,7 +19,7 @@ A comprehensive report can be found [here](./REPORT.md).
 
 ## Run server
 1. Set environment variabel `FLASK_APP="server"`
-2. Start server on port 5000 with `flask run`
+2. Start server on http://localhost:5000 with `flask run`
 
 ## Demo frontend
 1. Start frontend with `python -m http.server 8080`
