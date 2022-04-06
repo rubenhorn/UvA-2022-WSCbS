@@ -1,9 +1,11 @@
+from msilib.schema import Error
 from pathlib import Path
 import shelve
 
+db_path = (Path(__file__).parent / 'data').absolute()
+
 def _open_db():
-    filename = str((Path(__file__).parent / 'data').absolute())
-    return shelve.open(filename)
+    return shelve.open(str(db_path))
 
 def put_url(key, url):
     with _open_db() as db:
@@ -11,7 +13,7 @@ def put_url(key, url):
 
 def get_url(key):
     with _open_db() as db:
-        return db[key]
+        return db.get(key, None)
 
 def delete_url(key):
     with _open_db() as db:
