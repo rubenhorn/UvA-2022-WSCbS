@@ -12,3 +12,8 @@ __pycache__
 pyvenv.cfg
 .venv
 pip-selfcheck.json
+
+# shelve
+*.bak
+*.dat
+*.dir
