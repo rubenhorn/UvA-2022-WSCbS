@@ -3,6 +3,9 @@ A simple URL shortener with a REST API that follows the [JSend](https://github.c
 
 Individual contributions are tracked in [this table](./CONTRIB.csv).
 
+A comprehensive report can be found [here](./REPORT.md).  
+(To generate a PDF file run `pandoc REPORT.md -o REPORT.pdf`)
+
 ## Requirements
 * Python 3.10 with pip
 
