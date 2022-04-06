@@ -26,11 +26,30 @@
 
         const URL = (props) => {
             const url = baseUrl + '/' + props._key;
+            let [isEditing, setIsEditing] = React.useState(false);
+            let [destinationURL, setDestinationURL] = React.useState(props.url);
 
             const removeURL = () => {
                 fetch(url, { method: 'DELETE', headers: { 'Authorization': props.username }})
                     .then(data => props.reloadUrls());
             };
+
+            let destination;
+            if(isEditing) {
+                destination = <input defaultValue={ props.url } onChange={ (e) => setDestinationURL(e.target.value) } ></input>
+            }
+            else {
+                destination = props.url
+            }
+
+            const toggleEditing = () => {
+                if(isEditing) {
+                    let payload = JSON.stringify({ url: destinationURL });
+                    fetch(url, { method: 'PUT', headers: { 'Authorization': props.username, 'Content-Type': 'application/json' }, body: payload })
+                        .then(data => props.reloadUrls());
+                }
+                setIsEditing(!isEditing);
+            }
 
             return (
                 <li key={ url }>
@@ -38,7 +57,9 @@
                     &nbsp;
                     <a href={ url } key={ url + '_link' }>{ url }</a>
                     &nbsp;
-                    <span key={ url + '_destination' }>({ props.url })</span>
+                    <span key={ url + '_destination' }>{ destination }</span>
+                    &nbsp;
+                    <button onClick={ toggleEditing }>{ isEditing ? 'Done' : 'Edit' }</button>
                 </li>
             );
         };
