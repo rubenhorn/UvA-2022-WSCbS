@@ -47,6 +47,7 @@ class TestRepositoryShelve:
         with tempfile.TemporaryDirectory() as directory:
             db.db_path = (Path(directory) / 'data').absolute()
             yield db
+            db._close_db_if_open() # Write changes to disk before deleting temporary directory
 
     def test_crud_url(self, db):
         _test_crud_url(db)
