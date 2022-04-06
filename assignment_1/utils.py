@@ -11,7 +11,11 @@ def get_config(app, key, default=None):
     return default
 
 def is_url_valid(url):
-    return url is not None and validators.url(url)
+    if url is None:
+        return False
+    if not url.startswith('http://') and not url.startswith('https://'):
+        return False
+    return validators.url(url)
 
 def create_unique_id():
     return uuid.uuid4().hex[:8]
@@ -33,7 +37,9 @@ def get_data_response(status_code, data):
     return Response(json.dumps(json_data), status_code, mimetype=mimetype)
 
 def get_redirect_response(url):
-    return Response(status=301, mimetype=mimetype, headers={'Location': url})
+    response = get_data_response(301, {'url': url})
+    response.headers.add_header('Location', url)
+    return response
 
 def url_from_request(request):
     try:
