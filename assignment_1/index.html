@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>URL shortener</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script type="text/babel">
+        const baseUrl = 'http://localhost:5000'
+
+        const UserField = (props) => { 
+            let [username, setUsername] = React.useState(props.username);
+            return (
+                <React.Fragment>
+                    <h2>Username:</h2>
+                    <input defaultValue={ username } onChange={ (e) => setUsername(e.target.value) } />
+                    &nbsp;
+                    <button onClick={ () => props.setUsername(username) } >Set</button>
+                </React.Fragment>
+            );
+        };
+
+        const URL = (props) => {
+            const url = baseUrl + '/' + props._key;
+
+            const removeURL = () => {
+                fetch(url, { method: 'DELETE', headers: { 'Authorization': props.username }})
+                    .then(data => props.reloadUrls());
+            };
+
+            return (
+                <li key={ url }>
+                    <button onClick={ removeURL } key={ url + '_btn_remove' }>x</button>
+                    &nbsp;
+                    <a href={ url } key={ url + '_link' }>{ url }</a>
+                    &nbsp;
+                    <span key={ url + '_destination' }>({ props.url })</span>
+                </li>
+            );
+        };
+
+        const URLField = (props) => {
+            let [url, setUrl] = React.useState('');
+            const addUrl = () => {
+                const payload = JSON.stringify({ url: url });
+                console.log(payload);
+                fetch(baseUrl + '/', { method: 'POST', headers: { 'Authorization': props.username, 'Content-Type': 'application/json' }, body: payload })
+                    .then(data => props.reloadUrls());
+            };
+            return (
+                <React.Fragment>
+                    <h2>Add URL:</h2>
+                    <input onChange={ (e) => setUrl(e.target.value) } />
+                    &nbsp;
+                    <button onClick={ addUrl }>+</button>
+                </React.Fragment>
+            );
+        };
+
+        const App = () => {
+            let [username, setUsername] = React.useState('alice');
+            let [keysAndURLs, setKeysAndURLs] = React.useState([]);
+
+            const loadUrls = () => {
+                fetch(baseUrl + '/', { headers: { 'Authorization': username }})
+                    .then(response => response.json())
+                    .then(json => setKeysAndURLs(json.data.shortened_urls));
+            }
+
+            React.useEffect(() => {
+                loadUrls();
+            }, []);
+
+            let urls = keysAndURLs.map(x => <URL key={ 'url_' + x.key } _key={ x.key } url={ x.url } username={ username } reloadUrls={ loadUrls } />);
+
+            return (
+                <div className="App">
+                    <h1 key={ 'h1' }>URL shortener</h1>
+                    <UserField username={ username } setUsername={ setUsername } key={ 'input_user' } />
+                    <h2 key={ 'h2_urls' }>Your URLs:</h2>
+                    <ul key={ 'urls' }>{ urls }</ul>
+                    <URLField username={ username } reloadUrls={ loadUrls } key={ 'input_url' } />
+                </div>
+                );
+        };
+        
+        const root = document.querySelector('#root');
+        ReactDOM.render(<App />, root);
+    </script>
+</head>
+
+<body>
+    <div id="root">Loading react app...</div>
+</body>
+
+</html>

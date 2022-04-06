@@ -1,9 +1,11 @@
 from flask import Flask, request
+from flask_cors import CORS
 from repository_policy import get_repository
 import utils
 import werkzeug.exceptions
 
 app = Flask(__name__)
+CORS(app)
 
 # ==================== PARTIAL ROUTES ====================
 
@@ -33,8 +35,8 @@ def delete_url(user, key):
 
 def get_keys(user):
     keys = get_repository(app).scan(lambda _, value: value[1] == user)
-    keys = [key[len(user) + 1:] for key in keys]
-    return utils.get_data_response(200, { 'keys': keys })
+    keys_and_urls = [{ 'key': key, 'url': str(get_repository(app).get_url_and_user(key)[0]) } for key in keys]
+    return utils.get_data_response(200, { 'shortened_urls': keys_and_urls })
 
 def create_url(user, url):
     if not utils.is_url_valid(url):

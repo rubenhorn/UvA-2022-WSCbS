@@ -17,3 +17,7 @@ Individual contributions are tracked in [this table](./CONTRIB.csv).
 ## Run server
 1. Set environment variabel `FLASK_APP="server"`
 2. Start server on port 5000 with `flask run`
+
+## Demo frontend
+1. Start frontend with `python -m http.server 8080`
+2. Open http://localhost:8080 in your browser

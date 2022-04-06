@@ -67,7 +67,10 @@ class TestInterface(TestBase):
         response = client.get('/', headers={'Authorization': test_auth_header})
         assert response.status_code == 200
         assert response.json['status'] == 'success'
-        assert type(response.json['data']['keys']) == list
+        assert type(response.json['data']['shortened_urls']) == list
+        list_item = response.json['data']['shortened_urls'][0]
+        assert type(list_item['key']) == str
+        assert type(list_item['url']) == str
 
     def test_create_key_should_succeed(self, client):
         response = client.post('/', json={'url': test_url}, headers={'Authorization': test_auth_header})
