@@ -1,5 +1,8 @@
 Name,Date,Contribution,Comment
-Abdellah,2022-04-04,Flask/pytest boilerplate code,Peer-programming during lab
-Adrian,2022-04-04,Flask/pytest boilerplate code,Peer-programming during lab
-Ruben,2022-04-04,Flask/pytest boilerplate code,Peer-programming during lab
+Abdellah,2022-04-04,Flask/pytest code,Peer-programming during lab
+Adrian,2022-04-04,Flask/pytest code,Peer-programming during lab
+Ruben,2022-04-04,Flask/pytest code,Peer-programming during lab
 Ruben,2022-04-04,Refactoring,
+Ruben,2022-04-06,Persistence using shelve and demo frontend,
+Abdellah,2022-04-06,Code review,
+Adrian,2022-04-06,Code review
