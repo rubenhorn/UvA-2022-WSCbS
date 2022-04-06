@@ -45,16 +45,19 @@
 
         const URLField = (props) => {
             let [url, setUrl] = React.useState('');
+            const inputRef = React.useRef(null);
             const addUrl = () => {
                 const payload = JSON.stringify({ url: url });
-                console.log(payload);
                 fetch(baseUrl + '/', { method: 'POST', headers: { 'Authorization': props.username, 'Content-Type': 'application/json' }, body: payload })
-                    .then(data => props.reloadUrls());
+                    .then(data => {
+                        inputRef.current.value = '';
+                        props.reloadUrls()
+                    });
             };
             return (
                 <React.Fragment>
                     <h2>Add URL:</h2>
-                    <input onChange={ (e) => setUrl(e.target.value) } />
+                    <input onChange={ (e) => setUrl(e.target.value) } ref={ inputRef } />
                     &nbsp;
                     <button onClick={ addUrl }>+</button>
                 </React.Fragment>
