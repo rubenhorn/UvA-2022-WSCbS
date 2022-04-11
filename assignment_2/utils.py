@@ -46,3 +46,23 @@ def url_from_request(request):
         return request.json['url']
     except Exception:
         return None
+
+def get_credentials_from_request(request):
+    try:
+        username = request.json['username']
+        password = request.json['password']
+        m = hashlib.new('sha256')
+        m.update(password.encode('utf-8'))
+        digest = m.hexdigest()
+        return (username, digest)
+    except:
+        return None
+
+def store_credentials_in_db(credentials):
+    pass
+
+def get_password_hash_from_db(username):
+    return None
+
+def generate_token(username):
+    return None
