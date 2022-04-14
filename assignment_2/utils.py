@@ -8,6 +8,7 @@ import validators
 
 mimetype = 'application/json'
 _jwt_secret = 'this_is_a_secret'
+_app_secret = 'url-shortener-auth'
 
 def get_config(app, key, default=None):
     if key in app.config:
@@ -55,9 +56,11 @@ def get_credentials_from_request(request):
     try:
         username = request.json['username']
         password = request.json['password']
-        m = hashlib.new('sha256')
-        m.update(password.encode('utf-8'))
-        digest = m.hexdigest()
+        m1 = hashlib.new('sha256')
+        m1.update((username + _app_secret).encode('utf-8'))
+        m2 = hashlib.new('sha256')
+        m2.update((password + m1.hexdigest()).encode('utf-8'))
+        digest = m2.hexdigest()
         return (username, digest)
     except:
         return None
