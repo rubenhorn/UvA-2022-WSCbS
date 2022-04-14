@@ -10,7 +10,7 @@ class TestBase:
     @pytest.fixture
     def client(self):
         global test_key_exists
-        from server import app
+        from app_server import app
         app.config['DEFAULT_USER'] = None
         app.config['EPHEMERAL'] = True # Do not use persistent storage for testing
         client = app.test_client()

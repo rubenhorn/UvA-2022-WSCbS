@@ -1,9 +1,13 @@
+import hashlib
+import time
 from flask import Response
 import json
 import uuid
+import jwt
 import validators
 
 mimetype = 'application/json'
+_jwt_secret = 'this_is_a_secret'
 
 def get_config(app, key, default=None):
     if key in app.config:
@@ -58,11 +62,18 @@ def get_credentials_from_request(request):
     except:
         return None
 
-def store_credentials_in_db(credentials):
-    pass
-
-def get_password_hash_from_db(username):
-    return None
-
 def generate_token(username):
-    return None
+    payload = {
+        'sub': username,
+        'iat': int(time.time()),
+    }
+    return jwt.encode(payload, _jwt_secret, algorithm='HS256')
+
+def user_from_token(token, max_age=3600):
+    try:
+        payload = jwt.decode(token, _jwt_secret, algorithms=['HS256'])
+        if payload['iat'] + max_age < time.time():
+            return None # Expired
+    except:
+        return None
+    return payload['sub']

@@ -18,6 +18,7 @@ pip-selfcheck.json
 *.dat
 *.dir
 */data
+*/users
 
 # Compiled documents
 *.pdf

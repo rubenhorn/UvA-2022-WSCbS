@@ -24,10 +24,11 @@ def _test_scan_values(db):
     db.put_url_and_user('key4', 'http://example.com', 'bob')
     db.put_url_and_user('key5', 'http://example.com', 'bob')
     scan_result = db.scan(lambda _, value: value[1] == 'alice')
-    assert len(scan_result) == 3
     assert 'key1' in scan_result
     assert 'key2' in scan_result
     assert 'key3' in scan_result
+    assert 'key4' not in scan_result
+    assert 'key5' not in scan_result
 
 class TestRepositoryInMemory:
     @pytest.fixture
