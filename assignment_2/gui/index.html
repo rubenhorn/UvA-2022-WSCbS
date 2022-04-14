@@ -12,24 +12,58 @@
     <script type="text/babel">
         const baseUrl = 'http://localhost:5000'
         const params = new URLSearchParams(window.location.search);
-        let username = params.get('username');
+        let token = params.get('token');
+        let username = params.get('user');
 
-        function setUsername(username) {
-            window.location = window.location.origin + window.location.pathname + '?username=' + username;
+        function setTokenUser(token, user) {
+            let tokenParam = token != null ? '?token=' + token : '';
+            let userParam = user != null ? '&user=' + user : '';
+            window.location = window.location.origin + window.location.pathname + tokenParam + userParam;
         }
 
-        if(username == null) {
-            setUsername('alice');
-        }
+        function login(u,p, register) {
+                let url = baseUrl + '/users';
+                if(!register) {
+                    url += '/login';
+                }
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: u,
+                        password: p
+                    })
+                }).then(res => res.json()).then(data => {
+                    console.log(data);
+                    if(data.status == 'success') {
+                        setTokenUser(data.data.bearer_token, u);
+                    } else {
+                        alert(data.data.message);
+                    }
+                });
+            }
 
-        const UserField = (props) => { 
-            let [newUsername, setNewUsername] = React.useState(username);
+        const Login = (props) => { 
+            let [newUsername, setNewUsername] = React.useState('');
+            let [newPassword, setNewPassword] = React.useState('');
+            if(token != null) {
+                return <React.Fragment>
+                    <h2>Logged in as { username }</h2>
+                    <button onClick={ () => setTokenUser(null, null) } >Logout</button>
+                </React.Fragment>
+            }
             return (
                 <React.Fragment>
-                    <h2>Username: { username }</h2>
-                    <input defaultValue={ newUsername } onChange={ (e) => setNewUsername(e.target.value) } />
+                    <h2>Login</h2>
+                    <input onChange={ (e) => setNewUsername(e.target.value) } />
                     &nbsp;
-                    <button onClick={ () => setUsername(newUsername) } >Set</button>
+                    <input onChange={ (e) => setNewPassword(e.target.value) } />
+                    &nbsp;
+                    <button onClick={ () => login(newUsername, newPassword, false) } >Login</button>
+                    &nbsp;
+                    <button onClick={ () => login(newUsername, newPassword, true) } >Register</button>
                 </React.Fragment>
             );
         };
@@ -40,7 +74,7 @@
             let [destinationURL, setDestinationURL] = React.useState(props.url);
 
             const removeURL = () => {
-                fetch(url, { method: 'DELETE', headers: { 'Authorization': username }})
+                fetch(url, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } })
                     .then(data => props.reloadUrls());
             };
 
@@ -55,7 +89,7 @@
             const toggleEditing = () => {
                 if(isEditing) {
                     let payload = JSON.stringify({ url: destinationURL });
-                    fetch(url, { method: 'PUT', headers: { 'Authorization': username, 'Content-Type': 'application/json' }, body: payload })
+                    fetch(url, { method: 'PUT', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: payload })
                         .then(data => props.reloadUrls());
                 }
                 setIsEditing(!isEditing);
@@ -79,7 +113,7 @@
             const inputRef = React.useRef(null);
             const addUrl = () => {
                 const payload = JSON.stringify({ url: url });
-                fetch(baseUrl + '/', { method: 'POST', headers: { 'Authorization': username, 'Content-Type': 'application/json' }, body: payload })
+                fetch(baseUrl + '/', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: payload })
                     .then(data => {
                         inputRef.current.value = '';
                         props.reloadUrls()
@@ -99,9 +133,14 @@
             let [keysAndURLs, setKeysAndURLs] = React.useState([]);
 
             const loadUrls = () => {
-                fetch(baseUrl + '/', { headers: { 'Authorization': username }})
+                fetch(baseUrl + '/', { headers: { 'Authorization': `Bearer ${token}` }})
                     .then(response => response.json())
-                    .then(json => setKeysAndURLs(json.data.shortened_urls));
+                    .then(json => {
+                        const shortened_urls = json.data.shortened_urls;
+                        if(shortened_urls != null) {
+                            setKeysAndURLs(shortened_urls);
+                        }
+                    });
             }
 
             React.useEffect(() => {
@@ -113,7 +152,7 @@
             return (
                 <div className="App">
                     <h1 key={ 'h1' }>URL shortener</h1>
-                    <UserField key={ 'input_user' } />
+                    <Login key={ 'input_user' } />
                     <h2 key={ 'h2_urls' }>Your URLs:</h2>
                     <ul key={ 'urls' }>{ urls }</ul>
                     <URLField username={ username } reloadUrls={ loadUrls } key={ 'input_url' } />
