@@ -17,6 +17,7 @@ pip-selfcheck.json
 *.bak
 *.dat
 *.dir
+*/data
 
 # Compiled documents
 *.pdf

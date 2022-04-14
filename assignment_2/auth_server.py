@@ -1,9 +1,6 @@
 from flask import Flask, request
 from flask_cors import CORS
-from repository_policy import get_repository
 import utils
-import werkzeug.exceptions
-import hashlib
 
 app = Flask(__name__)
 CORS(app)
@@ -11,7 +8,7 @@ CORS(app)
 # ==================== ROUTES ====================
 
 @app.route('/users', methods=['POST'])
-def route_users():
+def register():
     credentials = utils.get_credentials_from_request(request)
     if credentials is None or utils.get_password_hash_from_db(credentials[0]) is not None:
         # todo: bad request (400)
@@ -22,7 +19,7 @@ def route_users():
 
 
 @app.route('/users/login', methods=['POST'])
-def route_users():
+def login():
     credentials = utils.get_credentials_from_request(request)
     try:
         hash_db = utils.get_password_hash_from_db(credentials[0])

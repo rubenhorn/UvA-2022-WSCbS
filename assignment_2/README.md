@@ -1,5 +1,5 @@
 # URL shortener
-A simple URL shortener with a REST API that follows the [JSend](https://github.com/omniti-labs/jsend) specification.
+App, auth and frontend servers running behind a naive reverse proxy.
 
 Individual contributions are tracked in [this table](./CONTRIB.csv).
 
@@ -17,10 +17,5 @@ A comprehensive report can be found [here](./REPORT.md).
 ## Run tests
 1. Run all tests with `pytest`
 
-## Run server
-1. Set environment variabel `FLASK_APP="server"`
-2. Start server on http://localhost:5000 with `flask run`
-
-## Demo frontend
-1. Start frontend with `python -m http.server 8080`
-2. Open http://localhost:8080 in your browser
+## Run servers
+2. Start app on http://localhost:5000/gui with `run_servers.py`
