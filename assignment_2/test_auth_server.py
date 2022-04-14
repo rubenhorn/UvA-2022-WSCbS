@@ -42,4 +42,4 @@ class TestInterface(TestBase):
         response = client.post('/users/login', json={ 'username': 'charlie', 'password': 'test' })
         assert response.status_code == 200
         assert response.json['status'] == 'success'
-        assert utils.user_from_token(response.json['data']['bearer_token']) == 'charlie'
+        assert utils.get_user_from_token(response.json['data']['bearer_token']) == 'charlie'

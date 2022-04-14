@@ -1,8 +1,9 @@
 import pytest
+import utils
 
 test_url = 'https://www.example.org'
-test_auth_header_a = 'alice'
-test_auth_header_b = 'bob'
+test_auth_header_a = 'Bearer ' + utils.generate_token('alice')
+test_auth_header_b = 'Bearer ' + utils.generate_token('bob')
 test_key_exists = None
 test_key_not_exists = 'foo'
 

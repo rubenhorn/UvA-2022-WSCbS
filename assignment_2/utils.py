@@ -26,10 +26,10 @@ def create_unique_id():
 
 def get_user(request, default=None):
     header_key = 'Authorization'
-    user = request.headers.get(header_key)
-    # TODO exctract user from JWT
-    if user is None:
-        user = default
+    header_value = request.headers.get(header_key)
+    user = default
+    if str(header_value).startswith('Bearer '):
+        return get_user_from_token(header_value[7:])
     return user
 
 def get_error_response(status_code, message):
@@ -69,7 +69,7 @@ def generate_token(username):
     }
     return jwt.encode(payload, _jwt_secret, algorithm='HS256')
 
-def user_from_token(token, max_age=3600):
+def get_user_from_token(token, max_age=3600):
     try:
         payload = jwt.decode(token, _jwt_secret, algorithms=['HS256'])
         if payload['iat'] + max_age < time.time():
