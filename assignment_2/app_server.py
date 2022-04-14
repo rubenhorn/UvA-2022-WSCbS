@@ -52,7 +52,7 @@ def create_url(user, url):
 def route_url(key):
     user = utils.get_user(request, utils.get_config(app, 'DEFAULT_USER'))
     if request.method != 'GET' and user is None:
-        res = utils.get_error_response(UNAUTHORIZED, 'Unauthorized')
+        res = utils.get_error_response(FORBIDDEN, 'Forbidden')
     else:
         match request.method:
             case 'GET':
@@ -70,7 +70,7 @@ def route_url(key):
 def route_keys():
     user = utils.get_user(request, utils.get_config(app, 'DEFAULT_USER'))
     if user is None:
-        res = utils.get_error_response(UNAUTHORIZED, 'Unauthorized')
+        res = utils.get_error_response(FORBIDDEN, 'Forbidden')
     else:
         match request.method:
             case 'GET':

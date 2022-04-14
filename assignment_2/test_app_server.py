@@ -22,9 +22,9 @@ class TestBase:
 class TestInterface(TestBase):
     def test_unauthorized_request_should_fail(self, client):
         response = client.get('/')
-        assert response.status_code == 401
+        assert response.status_code == 403
         assert response.json['status'] == 'error'
-        assert response.json['data'] == { 'message': 'Unauthorized' }
+        assert response.json['data'] == { 'message': 'Forbidden' }
 
     def test_get_non_existing_key_should_fail(self, client):
         response = client.get(f'/{test_key_not_exists}')
