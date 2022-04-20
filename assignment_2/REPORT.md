@@ -41,10 +41,34 @@ This can be attributed to two things:
 \pagebreak
 # References
 \flushleft
-[1] https://datatracker.ietf.org/doc/html/rfc7519  
-[2] https://flask.palletsprojects.com/  
-[3] https://www.nginx.com/  
-[4] https://couchdb.apache.org/  
-[5] https://kubernetes.io/docs/concepts/architecture/controller/
-[6] https://kubernetes.io/
-[7] https://docs.docker.com/compose/
+- [1] Internet Engineering Task Force, "JSON Web  
+\hspace{0.4cm} Token (JWT)", May 2015, [Online].
+\hspace{0.4cm} https://datatracker.ietf.org/doc/html/rfc7519.  
+\hspace{0.4cm} [Accessed April 20, 2022]. 
+ 
+- [2] Pallets, Flask Documentation, 2010, [Online].  
+\hspace{0.4cm}  https://flask.palletsprojects.com/.  
+\hspace{0.4cm} [Accessed April 20, 2022].  
+
+- [3] F5 Networks Inc., Nginx website, [Online].  
+\hspace{0.4cm} https://www.nginx.com/.  
+\hspace{0.4cm} [Accessed April 20, 2022].  
+
+- [4] The Apache Software Foundation, Apache  
+\hspace{0.4cm} CouchDB 2021, [Online].  
+\hspace{0.4cm} https://couchdb.apache.org/.  
+\hspace{0.4cm} [Accessed April 20, 2022].  
+
+- [5] The Kubernetes Authors, Kubernetes  
+\hspace{0.4cm} documentation, 2022, [Online].
+\hspace{0.4cm} https://kubernetes.io/docs/concepts/architecture/controller/.  
+\hspace{0.4cm} [Accessed April 20, 2022].
+
+- [6] The Kubernetes Authors, Kubernetes website,  
+\hspace{0.4cm} 2022, [Online].  
+\hspace{0.4cm} https://kubernetes.io/.  
+\hspace{0.4cm} [Accessed April 20, 2022].
+
+- [7] Docker Inc., Docker Documentation, [Online].  
+\hspace{0.4cm} https://docs.docker.com/compose/.  
+\hspace{0.4cm} [Accessed April 20, 2022].
