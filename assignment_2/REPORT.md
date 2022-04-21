@@ -1,6 +1,6 @@
 ---
 geometry:
-- margin=2.5cm
+- margin=2.3cm
 classoption:
 - twocolumn
 ---
@@ -14,12 +14,9 @@ classoption:
 
 ## JWT authentication
 In this assignment, we implement authentication using JSON Web Tokens (JWT) [1] for the URL shortener from assignment 1.
-User accounts are managed by a separate microservice with its own persistent storage.
-
-For the authentication microservice, we re-use most of the code that was previously written for the URL shortener, since it also consists of a simple HTTP server with a persistent repository. Users credentials are stored by username in a key-value store and hashed using SHA256 to protect them against data leaks. For the sake of simplicity, we do not generate a random salt for each user, and instead only include the username and a global secret value in the generation of the password hash. This offers at least some protection for re-used passwords.
-
-We have already laid the foundation for multiple user support in the URL shortener by storing the owner along with the destination URL and requiring the 'Authorization' header. While this previously contained the user in plain text and no further checks were made, we now decode it from a JWT using a shared secret between the two servers and HMAC with SHA-256. Alternatively, we could have used an asymmetric algorithm which is harder to compromise, since in that case only compromizing the authentication service would allow the attacker to generate tokens for all users, however this does not change the overall setup. Aside from the field `sub` for the username, the payload also contains a timestamp in `iat` and tokens older than one hour will not be accepted. This is necessary to protect the users in the case that a token is stolen.
-
+User accounts are managed by a separate microservice with its own persistent storage.  
+For the authentication microservice, we re-use most of the code that was previously written for the URL shortener, since it also consists of a simple HTTP server with a persistent repository. Users credentials are stored by username in a key-value store and hashed using SHA256 to protect them against data leaks. For the sake of simplicity, we do not generate a random salt for each user, and instead only include the username and a global secret value in the generation of the password hash. This offers at least some protection for re-used passwords.  
+We have already laid the foundation for multiple user support in the URL shortener by storing the owner along with the destination URL and requiring the 'Authorization' header. While this previously contained the user in plain text and no further checks were made, we now decode it from a JWT using a shared secret between the two servers and HMAC with SHA-256. Alternatively, we could have used an asymmetric algorithm which is harder to compromise, since in that case only compromizing the authentication service would allow the attacker to generate tokens for all users, however this does not change the overall setup. Aside from the field `sub` for the username, the payload also contains a timestamp in `iat` and tokens older than one hour will not be accepted. This is necessary to protect the users in the case that a token is stolen.  
 In this setup, the two services are decoupled as much as possible and only rely on a shared algorithm and secret.
 
 ## Single entry point
@@ -37,6 +34,7 @@ We observe a significant increase in severe response time compared to the previo
 This can be attributed to two things:
 1. Our naive reverse proxy is not optimized, and we occur a substantial increase in response time owed to an additional HTTP 1.1 request and invocation of a flask handler per request. Production grade proxy servers are implemented using more efficient technologies and may also cache static content.
 2. For convenience, we use a single Python script to spawn and terminate all server processes. We have previously observed that using Python instead of shell scripts to do this comes with a significant performance decrease to the child process. A better solution would be to containerize the server applications and orchestrate them using Kubernetes [6] or Docker Compose [7] for simpler scenarios.
+As discussed with our TA, invoking DELETE on "/" has not effect, since this operation is very expensive on the database and not useful to many users. The server will responde with HTTP 404 to communicate that "there is nothing to delete".
 
 \pagebreak
 # References
