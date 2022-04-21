@@ -30,6 +30,6 @@ def proxy(req_path):
         data=request.data,
         params=request.args,
         cookies=request.cookies,
-        allow_redirects=True
+        allow_redirects=False
     )
     return Response(response.content, response.status_code, response.headers.items())
