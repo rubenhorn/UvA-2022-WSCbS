@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>URL shortener</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script type="text/babel">
+        const baseUrl = 'http://localhost:5000'
+        const params = new URLSearchParams(window.location.search);
+        let token = params.get('token');
+        let username = params.get('user');
+
+        function setTokenUser(token, user) {
+            let tokenParam = token != null ? '?token=' + token : '';
+            let userParam = user != null ? '&user=' + user : '';
+            window.location = window.location.origin + window.location.pathname + tokenParam + userParam;
+        }
+
+        function login(u,p, register) {
+                let url = baseUrl + '/users';
+                if(!register) {
+                    url += '/login';
+                }
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: u,
+                        password: p
+                    })
+                }).then(res => {
+                    if(register) {
+                        login(u,p, false);
+                    }
+                    else {
+                        res.json().then(data => {
+                            console.log(data);
+                            if(data.status == 'success') {
+                                setTokenUser(data.data.bearer_token, u);
+                            } else {
+                                alert(data.data.message);
+                            }
+                        });
+                    }
+                });
+            }
+
+        const Login = (props) => { 
+            let [newUsername, setNewUsername] = React.useState('');
+            let [newPassword, setNewPassword] = React.useState('');
+            if(token != null) {
+                return <React.Fragment>
+                    <h2>Logged in as { username }</h2>
+                    <button onClick={ () => setTokenUser(null, null) } >Logout</button>
+                </React.Fragment>
+            }
+            return (
+                <React.Fragment>
+                    <h2>Login</h2>
+                    <input onChange={ (e) => setNewUsername(e.target.value) } />
+                    &nbsp;
+                    <input onChange={ (e) => setNewPassword(e.target.value) } />
+                    &nbsp;
+                    <button onClick={ () => login(newUsername, newPassword, false) } >Login</button>
+                    &nbsp;
+                    <button onClick={ () => login(newUsername, newPassword, true) } >Register</button>
+                </React.Fragment>
+            );
+        };
+
+        const URL = (props) => {
+            const url = baseUrl + '/' + props._key;
+            let [isEditing, setIsEditing] = React.useState(false);
+            let [destinationURL, setDestinationURL] = React.useState(props.url);
+
+            const removeURL = () => {
+                fetch(url, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } })
+                    .then(data => props.reloadUrls());
+            };
+
+            let destination;
+            if(isEditing) {
+                destination = <input defaultValue={ props.url } onChange={ (e) => setDestinationURL(e.target.value) } ></input>
+            }
+            else {
+                destination = props.url
+            }
+
+            const toggleEditing = () => {
+                if(isEditing) {
+                    let payload = JSON.stringify({ url: destinationURL });
+                    fetch(url, { method: 'PUT', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: payload })
+                        .then(data => props.reloadUrls());
+                }
+                setIsEditing(!isEditing);
+            }
+
+            return (
+                <li key={ url }>
+                    <button onClick={ removeURL } key={ url + '_btn_remove' }>x</button>
+                    &nbsp;
+                    <a href={ url } key={ url + '_link' }>{ url }</a>
+                    &nbsp;
+                    <span key={ url + '_destination' }>{ destination }</span>
+                    &nbsp;
+                    <button onClick={ toggleEditing }>{ isEditing ? 'Done' : 'Edit' }</button>
+                </li>
+            );
+        };
+
+        const URLField = (props) => {
+            let [url, setUrl] = React.useState('');
+            const inputRef = React.useRef(null);
+            const addUrl = () => {
+                const payload = JSON.stringify({ url: url });
+                fetch(baseUrl + '/', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: payload })
+                    .then(data => {
+                        inputRef.current.value = '';
+                        props.reloadUrls()
+                    });
+            };
+            return (
+                <React.Fragment>
+                    <h2>Add URL:</h2>
+                    <input onChange={ (e) => setUrl(e.target.value) } ref={ inputRef } />
+                    &nbsp;
+                    <button onClick={ addUrl }>+</button>
+                </React.Fragment>
+            );
+        };
+
+        const App = () => {
+            let [keysAndURLs, setKeysAndURLs] = React.useState([]);
+
+            const loadUrls = () => {
+                fetch(baseUrl + '/', { headers: { 'Authorization': `Bearer ${token}` }})
+                    .then(response => response.json())
+                    .then(json => {
+                        const shortened_urls = json.data.shortened_urls;
+                        if(shortened_urls != null) {
+                            setKeysAndURLs(shortened_urls);
+                        }
+                    });
+            }
+
+            React.useEffect(() => {
+                loadUrls();
+            }, []);
+
+            let urls = keysAndURLs.map(x => <URL key={ 'url_' + x.key } _key={ x.key } url={ x.url } username={ username } reloadUrls={ loadUrls } />);
+
+            return (
+                <div className="App">
+                    <h1 key={ 'h1' }>URL shortener</h1>
+                    <Login key={ 'input_user' } />
+                    <h2 key={ 'h2_urls' }>Your URLs:</h2>
+                    <ul key={ 'urls' }>{ urls }</ul>
+                    <URLField username={ username } reloadUrls={ loadUrls } key={ 'input_url' } />
+                </div>
+                );
+        };
+        
+        const root = document.querySelector('#root');
+        ReactDOM.render(<App />, root);
+    </script>
+</head>
+
+<body>
+    <div id="root">Loading react app...</div>
+</body>
+
+</html>
