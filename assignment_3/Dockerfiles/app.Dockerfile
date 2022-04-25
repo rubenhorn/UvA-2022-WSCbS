@@ -12,4 +12,4 @@ COPY repository_policy.py .
 COPY repository_shelve.py .
 COPY repository_in_memory.py .
 COPY utils.py .
-CMD ["flask", "run"]
+CMD ["flask", "run", "--host=0.0.0.0"]

@@ -9,4 +9,4 @@ EXPOSE 5000
 ENV FLASK_APP=auth_server
 COPY auth_server.py .
 COPY utils.py .
-CMD ["flask", "run"]
+CMD ["flask", "run", "--host=0.0.0.0"]

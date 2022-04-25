@@ -10,5 +10,5 @@ A comprehensive report can be found [here](./REPORT.md).
 * Docker
 
 ## Run servers
-Start app on http://localhost:5000/gui with `docker compose up --build`
+Start app on http://localhost/gui with `docker compose up --build`
 
