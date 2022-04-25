@@ -1,8 +1,20 @@
 version: "3.9"
 services:
-  frontend:
+  auth:
     build:
       context: .
-      dockerfile: Dockerfiles/frontend.Dockerfile
+      dockerfile: Dockerfiles/auth.Dockerfile
     ports:
-      - "5001:80"
+      - "5001:5000"
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfiles/app.Dockerfile
+    ports:
+      - "5002:5000"
+  gui:
+    build:
+      context: .
+      dockerfile: Dockerfiles/gui.Dockerfile
+    ports:
+      - "5003:80"

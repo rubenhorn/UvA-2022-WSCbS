@@ -54,16 +54,15 @@ def route_url(key):
     if request.method != 'GET' and user is None:
         res = utils.get_error_response(FORBIDDEN, 'Forbidden')
     else:
-        match request.method:
-            case 'GET':
-                res = get_url(key)
-            case 'PUT':
-                url = utils.url_from_request(request)
-                res = update_url(user, key, url)
-            case 'DELETE':
-                res = delete_url(user, key)
-            case _:
-                raise werkzeug.exceptions.InternalServerError('Unhandled case')
+        if request.method == 'GET':
+            res = get_url(key)
+        elif request.method ==  'PUT':
+            url = utils.url_from_request(request)
+            res = update_url(user, key, url)
+        elif request.method ==  'DELETE':
+            res = delete_url(user, key)
+        else:
+            raise werkzeug.exceptions.InternalServerError('Unhandled case')
     return res
 
 @app.route('/', methods=['GET', 'POST', 'DELETE'])
@@ -72,14 +71,13 @@ def route_keys():
     if user is None:
         res = utils.get_error_response(FORBIDDEN, 'Forbidden')
     else:
-        match request.method:
-            case 'GET':
-                res = get_keys(user)
-            case 'POST':
-                url = utils.url_from_request(request)
-                res = create_url(user, url)
-            case 'DELETE':
-                res = utils.get_error_response(NOT_FOUND, 'Nothing to delete')
-            case _:
-                raise werkzeug.exceptions.InternalServerError('Unhandled case')
+        if request.method ==  'GET':
+            res = get_keys(user)
+        elif request.method ==  'POST':
+            url = utils.url_from_request(request)
+            res = create_url(user, url)
+        elif request.method ==  'DELETE':
+            res = utils.get_error_response(NOT_FOUND, 'Nothing to delete')
+        else:
+            raise werkzeug.exceptions.InternalServerError('Unhandled case')
     return res
