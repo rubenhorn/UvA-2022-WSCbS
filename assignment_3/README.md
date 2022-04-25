@@ -17,5 +17,5 @@ Build a container using `docker build -f .\Dockerfiles\<NAME>.Dockerfile -t grou
 3. Run the reverse proxy `docker run --network=<NET> -p 80:80 group6/reverse-proxy`.
 
 ## Run servers
-Start app on http://localhost/gui with `docker compose up --build`
+Start app on http://localhost/gui/ with `docker compose up --build`
 
