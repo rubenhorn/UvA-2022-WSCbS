@@ -13,8 +13,9 @@ Build a container using `docker build -f .\Dockerfiles\<NAME>.Dockerfile -t grou
 
 ## Start containers
 1. Create a network `docker network create <NET>`.
-2. Run containers `docker run --network=<NET> --name=<NAME> group6/<NAME>`.
-3. Run the reverse proxy `docker run --network=<NET> -p 80:80 group6/reverse-proxy`.
+2. Start database with `docker run --network=<NET> --name=db -e ARANGO_ROOT_PASSWORD=dbPass arangodb`.
+3. Run containers `docker run --network=<NET> --name=<NAME> group6/<NAME>`.
+4. Run the reverse proxy `docker run --network=<NET> -p 80:80 group6/reverse-proxy`.
 
 ## Run servers
 Start app on http://localhost/gui/ with `docker compose up --build`

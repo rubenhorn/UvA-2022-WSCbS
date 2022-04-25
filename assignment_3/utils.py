@@ -2,6 +2,7 @@ import hashlib
 import time
 from flask import Response
 import json
+from pyArango.connection import *
 import uuid
 import jwt
 import validators
@@ -9,11 +10,9 @@ import validators
 mimetype = 'application/json'
 _jwt_secret = 'this_is_a_secret'
 _app_secret = 'url-shortener-auth'
-
-def get_config(app, key, default=None):
-    if key in app.config:
-        return app.config[key]
-    return default
+_arango_url = 'http://db:8529'
+_arango_user = 'root'
+_arango_password = 'dbPass'
 
 def is_url_valid(url):
     if url is None:
@@ -80,3 +79,17 @@ def get_user_from_token(token, max_age=3600):
     except:
         return None
     return payload['sub']
+
+def get_database_collection(db_name, collection_name):
+    conn = Connection(arangoURL=_arango_url, username=_arango_user, password=_arango_password)
+    db = None
+    if conn.hasDatabase(db_name):
+        db = conn[db_name]
+    else:
+        db = conn.createDatabase(name=db_name)
+    collection = None
+    if db.hasCollection(collection_name):
+        collection = db[collection_name]
+    else:
+        collection = db.createCollection(name=collection_name)
+    return collection

@@ -1,7 +1,4 @@
-import atexit
 from http.client import BAD_REQUEST, FORBIDDEN, OK
-from pathlib import Path
-import shelve
 from flask import Flask, request
 from flask_cors import CORS
 import utils
@@ -9,36 +6,28 @@ import utils
 app = Flask(__name__)
 CORS(app)
 
-db_path = (Path(__file__).parent / 'users').absolute()
-_db = None
+DB_NAME = 'auth_service'
+COLLECTION_NAME = 'credentials'
 
-def _open_db_if_closed():
-    global _db
-    if _db is None:
-        if utils.get_config(app, 'EPHEMERAL'):
-            _db = dict()
-        else:
-            _db = shelve.open(str(db_path))
-
-def _close_db_if_open():
-    global _db
-    if _db is not None and not utils.get_config(app, 'EPHEMERAL'):
-        _db.close()
-    _db = None
-
-atexit.register(_close_db_if_open)
-
-def store_credentials_in_db(credentials):
-    _open_db_if_closed()
-    _db[credentials[0]] = credentials[1]
+def store_credentials_in_db(user_credentials):
+    credentials = utils.get_database_collection(DB_NAME, COLLECTION_NAME)
+    doc = None
     try:
-        _db.sync()
-    except: # Ephemeral db can't be synced
+        doc = credentials[user_credentials[0]]
+    except:
         pass
+    if doc is None:
+        doc = credentials.createDocument()
+    doc._key = user_credentials[0]
+    doc['hash'] = user_credentials[1]
+    doc.save()
 
 def get_password_hash_from_db(username):
-    _open_db_if_closed()
-    return _db.get(username)
+    credentials = utils.get_database_collection(DB_NAME, COLLECTION_NAME)
+    try:
+        return credentials[username]['hash']
+    except:
+        return None
 
 # ==================== ROUTES ====================
 

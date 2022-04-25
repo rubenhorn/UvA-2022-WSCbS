@@ -1,13 +1,21 @@
 version: "3.9"
 services:
+  db:
+    image: arangodb
+    environment:
+      - ARANGO_ROOT_PASSWORD=dbPass
   auth:
     build:
       context: .
       dockerfile: Dockerfiles/auth.Dockerfile
+    depends_on:
+      - db
   app:
     build:
       context: .
       dockerfile: Dockerfiles/app.Dockerfile
+    depends_on:
+      - db
   gui:
     build:
       context: .
@@ -18,3 +26,7 @@ services:
       dockerfile: Dockerfiles/reverse-proxy.Dockerfile
     ports:
       - "80:80"
+    depends_on:
+      - auth
+      - app
+      - gui
