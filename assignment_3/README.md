@@ -3,11 +3,18 @@ App, auth and frontend servers running behind a naive reverse proxy.
 
 Individual contributions are tracked in [this table](./CONTRIB.csv).
 
-A comprehensive report can be found [here](./REPORT.md).  
-(To generate a PDF file run `pandoc REPORT.md -o REPORT.pdf`)
+A comprehensive report can be found [here](./REPORT.pdf).
 
 ## Requirements
 * Docker
+
+## Build containers
+Build a container using `docker build -f .\Dockerfiles\<NAME>.Dockerfile -t group6/<NAME> .`.
+
+## Start containers
+1. Create a network `docker network create <NET>`.
+2. Run containers `docker run --network=<NET> --name=<NAME> group6/<NAME>`.
+3. Run the reverse proxy `docker run --network=<NET> -p 80:80 group6/reverse-proxy`.
 
 ## Run servers
 Start app on http://localhost/gui with `docker compose up --build`
