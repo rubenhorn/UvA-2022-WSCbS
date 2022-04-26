@@ -1,19 +1,26 @@
 import hashlib
+import os
 import time
 from flask import Response
 import json
+from pyArango.connection import *
 import uuid
 import jwt
 import validators
 
-mimetype = 'application/json'
-_jwt_secret = 'this_is_a_secret'
-_app_secret = 'url-shortener-auth'
+def get_config_or_exit(key):
+    config = os.getenv(key, None)
+    if config is None:
+        print('Configuration key not found in environment: ' + key)
+        exit(1)
+    return config
 
-def get_config(app, key, default=None):
-    if key in app.config:
-        return app.config[key]
-    return default
+mimetype = 'application/json'
+_app_secret = os.getenv('APP_SECRET', '') # Not strictly necessary -> fallback to empty string
+_jwt_secret = get_config_or_exit('JWT_SECRET')
+_arango_url = get_config_or_exit('ARANGO_URL')
+_arango_user = get_config_or_exit('ARANGO_USER')
+_arango_password = get_config_or_exit('ARANGO_PASSWORD')
 
 def is_url_valid(url):
     if url is None:
@@ -80,3 +87,17 @@ def get_user_from_token(token, max_age=3600):
     except:
         return None
     return payload['sub']
+
+def get_database_collection(db_name, collection_name):
+    conn = Connection(arangoURL=_arango_url, username=_arango_user, password=_arango_password)
+    db = None
+    if conn.hasDatabase(db_name):
+        db = conn[db_name]
+    else:
+        db = conn.createDatabase(name=db_name)
+    collection = None
+    if db.hasCollection(collection_name):
+        collection = db[collection_name]
+    else:
+        collection = db.createCollection(name=collection_name)
+    return collection

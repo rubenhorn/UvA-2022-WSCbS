@@ -1,13 +1,32 @@
 version: "3.9"
 services:
+  db:
+    image: arangodb
+    environment:
+      - ARANGO_ROOT_PASSWORD=${ARANGO_PASSWORD}
   auth:
     build:
       context: .
       dockerfile: Dockerfiles/auth.Dockerfile
+    environment:
+      - APP_SECRET=${APP_SECRET}
+      - JWT_SECRET=${JWT_SECRET}
+      - ARANGO_URL=${ARANGO_URL}
+      - ARANGO_USER=${ARANGO_USER}
+      - ARANGO_PASSWORD=${ARANGO_PASSWORD}
+    depends_on:
+      - db
   app:
     build:
       context: .
       dockerfile: Dockerfiles/app.Dockerfile
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - ARANGO_URL=${ARANGO_URL}
+      - ARANGO_USER=${ARANGO_USER}
+      - ARANGO_PASSWORD=${ARANGO_PASSWORD}
+    depends_on:
+      - db
   gui:
     build:
       context: .
@@ -18,3 +37,7 @@ services:
       dockerfile: Dockerfiles/reverse-proxy.Dockerfile
     ports:
       - "80:80"
+    depends_on:
+      - auth
+      - app
+      - gui
