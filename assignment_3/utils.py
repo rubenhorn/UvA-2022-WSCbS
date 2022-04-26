@@ -1,4 +1,5 @@
 import hashlib
+import os
 import time
 from flask import Response
 import json
@@ -7,12 +8,19 @@ import uuid
 import jwt
 import validators
 
+def get_config_or_exit(key):
+    config = os.getenv(key, None)
+    if config is None:
+        print('Configuration key not found in environment: ' + key)
+        exit(1)
+    return config
+
 mimetype = 'application/json'
-_jwt_secret = 'this_is_a_secret'
-_app_secret = 'url-shortener-auth'
-_arango_url = 'http://db:8529'
-_arango_user = 'root'
-_arango_password = 'dbPass'
+_app_secret = os.getenv('APP_SECRET', '') # Not strictly necessary -> fallback to empty string
+_jwt_secret = get_config_or_exit('JWT_SECRET')
+_arango_url = get_config_or_exit('ARANGO_URL')
+_arango_user = get_config_or_exit('ARANGO_USER')
+_arango_password = get_config_or_exit('ARANGO_PASSWORD')
 
 def is_url_valid(url):
     if url is None:
