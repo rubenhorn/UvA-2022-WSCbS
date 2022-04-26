@@ -1,0 +1,18 @@
+# Specify manifest version
+apiVersion: v1
+# Resource is a service
+kind: Service
+metadata:
+  # Name of the service (kubectl get services)
+  name: app-gui
+  # Labels for selecting the service
+  labels:
+    run: app-gui
+spec:
+  # Service exposes default HTTP port
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    # Selects all pods with the following key-value pair
+    run: app-gui

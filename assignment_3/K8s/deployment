@@ -12,28 +12,48 @@ if [ "$1" != "up" ] && [ "$1" != "down" ]; then
     exit 1
 fi
 
-INGRES_CONTROLLER_MANIFEST_URL=https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/cloud/deploy.yaml
+ingress_controller_manifest_url=https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/cloud/deploy.yaml
 
 cd "$(dirname "$0")"
 
-# Set UP
+# Set up
 if [ "$1" == "up" ]; then
-    echo "Setting up ingress controller"
-    kubectl apply -f $INGRES_CONTROLLER_MANIFEST_URL
-    echo "Waiting for ingress controller to be ready"
+    set -e
+    echo "====================== Ingress Controller ======================"
+    echo "Setting up ingress controller..."
+    kubectl apply -f $ingress_controller_manifest_url
+    echo "Waiting for ingress controller to be ready..."
     kubectl wait --namespace ingress-nginx \
         --for=condition=ready pod \
         --selector=app.kubernetes.io/component=controller \
         --timeout=120s
+    echo "Creating resources..."
     for file in $(ls *.yaml); do
-        echo "Creating resource for $file"
+        echo "====================== $file ======================"
         kubectl apply -f $file
     done
-else # Tear DOWN
+else # Tear down
+    echo "Deleting resources..."
     for file in $(ls *.yaml); do
-        echo "Deleting resource for $file"
+        echo "====================== $file ======================"
         kubectl delete -f $file
     done
-    echo "Tearing down ingress controller..."
-    kubectl delete -f $INGRES_CONTROLLER_MANIFEST_URL
+    # Keep the ingress controller running
+    # echo "====================== Ingress Controller ======================"
+    # kubectl delete -f $ingress_controller_manifest_url
 fi
+
+echo -e "\nReport:"
+for file in $(ls *.yaml); do
+    echo "====================== $file ======================"
+    # Set up
+    if [ "$1" == "up" ]; then
+        kubectl get -f $file --show-kind
+    else # Tear down
+        if ! kubectl get -f $file 2> /dev/null; then
+            echo "Deleted"
+        fi 
+    fi
+done
+
+echo -e "\nDone"

@@ -1,9 +1,16 @@
 #! /bin/bash
 
+set -e
+
 cd "$(dirname "$0")"
 
 for file in $(ls *.Dockerfile); do
     image_tag="group6/$(echo $file | cut -d'.' -f1)"
-    echo "Building image $image_name"
+    echo "Building image $image_tag..."
     docker build -f $file -t $image_tag ..
 done
+
+echo -e "\nReport:"
+docker images | grep ^group6/
+
+echo -e "\nDone"

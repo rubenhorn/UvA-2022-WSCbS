@@ -1,0 +1,22 @@
+# Specify manifest version
+apiVersion: networking.k8s.io/v1
+# Resource is an ingress
+kind: Ingress
+metadata:
+  # Name of the ingress (kubectl get ingress)
+  name: app-ingress
+spec:
+  # Use nginx ingress controller
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      # Route for all requests where the path starts with "/gui"
+      - path: /gui
+        pathType: Prefix
+        backend:
+          service:
+            # Forward to service "app-gui" on port 80
+            name: app-gui
+            port:
+              number: 80

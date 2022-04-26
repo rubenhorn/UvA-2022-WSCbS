@@ -1,0 +1,29 @@
+# Specify manifest version
+apiVersion: apps/v1
+# Resource is a deployment
+kind: Deployment
+metadata:
+  # Name of the deployment (kubectl get deployments)
+  name: app-gui
+spec:
+  # Select pods to be managed by deployment
+  selector:
+    matchLabels:
+      run: app-gui
+  # Create multiple pods according to the template below
+  replicas: 3
+  template:
+    metadata:
+      # Labels for selecting the pods
+      labels:
+        run: app-gui
+    spec:
+      containers:
+      - name: app-gui
+        # Specify image tag for container
+        image: group6/gui
+        # Image is not available in the public docker registry -> use local image
+        imagePullPolicy: Never
+        # Open default HTTP port on the container/pod
+        ports:
+        - containerPort: 80
