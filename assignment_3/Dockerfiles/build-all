@@ -1,0 +1,9 @@
+#! /bin/bash
+
+cd "$(dirname "$0")"
+
+for file in $(ls *.Dockerfile); do
+    image_tag="group6/$(echo $file | cut -d'.' -f1)"
+    echo "Building image $image_name"
+    docker build -f $file -t $image_tag ..
+done

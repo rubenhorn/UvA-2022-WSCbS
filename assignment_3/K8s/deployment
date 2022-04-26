@@ -1,0 +1,39 @@
+#! /bin/bash
+
+# Check if kubectl is installed
+if ! [ -x "$(command -v kubectl)" ]; then
+  echo 'Error: kubectl is not installed.' >&2
+  exit 1
+fi
+
+# Check script argument (up or down)
+if [ "$1" != "up" ] && [ "$1" != "down" ]; then
+    echo "Usage: $0 up|down"
+    exit 1
+fi
+
+INGRES_CONTROLLER_MANIFEST_URL=https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/cloud/deploy.yaml
+
+cd "$(dirname "$0")"
+
+# Set UP
+if [ "$1" == "up" ]; then
+    echo "Setting up ingress controller"
+    kubectl apply -f $INGRES_CONTROLLER_MANIFEST_URL
+    echo "Waiting for ingress controller to be ready"
+    kubectl wait --namespace ingress-nginx \
+        --for=condition=ready pod \
+        --selector=app.kubernetes.io/component=controller \
+        --timeout=120s
+    for file in $(ls *.yaml); do
+        echo "Creating resource for $file"
+        kubectl apply -f $file
+    done
+else # Tear DOWN
+    for file in $(ls *.yaml); do
+        echo "Deleting resource for $file"
+        kubectl delete -f $file
+    done
+    echo "Tearing down ingress controller..."
+    kubectl delete -f $INGRES_CONTROLLER_MANIFEST_URL
+fi
