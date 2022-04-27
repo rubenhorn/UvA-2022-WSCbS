@@ -1,0 +1,18 @@
+# Specify manifest version
+apiVersion: v1
+# Resource is a service
+kind: Service
+metadata:
+  # Name of the service (kubectl get services)
+  name: app-db
+  # Labels for selecting the service
+  labels:
+    run: app-db
+spec:
+  # Service exposes default ArangoDB port
+  ports:
+  - port: 8529
+    protocol: TCP
+  selector:
+    # Selects all pods with the following key-value pair
+    run: app-db

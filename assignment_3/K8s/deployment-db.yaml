@@ -1,0 +1,34 @@
+# Specify manifest version
+apiVersion: apps/v1
+# Resource is a deployment
+kind: Deployment
+metadata:
+  # Name of the deployment (kubectl get deployments)
+  name: app-db
+spec:
+  # Select pods to be managed by deployment
+  selector:
+    matchLabels:
+      run: app-db
+  # Single instance database
+  replicas: 1
+  template:
+    metadata:
+      # Labels for selecting the pods
+      labels:
+        run: app-db
+    spec:
+      containers:
+      - name: app-db
+        # Specify image tag for container
+        image: arangodb
+        # Set environment variables from secret
+        env:
+          - name: ARANGO_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: app-secret
+                key: ARANGO_PASSWORD
+        # Open default ArangoDB port on the container/pod
+        ports:
+        - containerPort: 8529
