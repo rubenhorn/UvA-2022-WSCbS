@@ -19,7 +19,6 @@ cd "$(dirname "$0")"
 # Set up
 if [ "$1" == "up" ]; then
     set -e
-    echo "====================== Ingress Controller ======================"
     echo "Setting up ingress controller..."
     kubectl apply -f $ingress_controller_manifest_url
     echo "Waiting for ingress controller to be ready..."
@@ -29,33 +28,18 @@ if [ "$1" == "up" ]; then
         --timeout=120s
     echo "Creating resources..."
     for file in $(ls *.yaml); do
-        echo "====================== $file ======================"
         kubectl apply -f $file
     done
 else # Tear down
     echo "Deleting resources..."
     for file in $(ls *.yaml); do
-        echo "====================== $file ======================"
-        kubectl delete -f $file
+        kubectl delete -f $file 2>/dev/null || echo "No resources to delete for $file"
     done
-    # Keep the ingress controller running
-    # echo "====================== Ingress Controller ======================"
+    # Keep the ingress controller running, so it doesn't take as much time to recreate the deployment
     # kubectl delete -f $ingress_controller_manifest_url
 fi
 
-echo -e "\nReport:"
-for file in $(ls *.yaml); do
-    echo "====================== $file ======================"
-    # Set up
-    if [ "$1" == "up" ]; then
-        kubectl get -f $file --show-kind
-    else # Tear down
-        if ! kubectl get -f $file 2> /dev/null; then
-            echo "Deleted"
-        else
-            echo "Failed to delete"
-        fi 
-    fi
-done
+echo -e "\nCluster resources:"
+kubectl get all
 
 echo -e "\nDone"

@@ -10,6 +10,7 @@ spec:
   ingressClassName: nginx
   rules:
   - http:
+      # The longest matching prefix of the request path will be used to determine the service
       paths:
       # Route for all requests where the path starts with "/gui"
       - path: /gui
@@ -20,3 +21,21 @@ spec:
             name: app-gui
             port:
               number: 80
+      # Route for all requests where the path starts with "/users"
+      - path: /users
+        pathType: Prefix
+        backend:
+          service:
+            # Forward to service "app-auth" on port 5000
+            name: app-auth
+            port:
+              number: 5000
+      # Route for all requests where the path starts with "/"
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            # Forward to service "app-url-shortener" on port 5000
+            name: app-url-shortener
+            port:
+              number: 5000

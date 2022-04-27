@@ -16,10 +16,10 @@ services:
       - ARANGO_PASSWORD=${ARANGO_PASSWORD}
     depends_on:
       - db
-  app:
+  url-shortener:
     build:
       context: .
-      dockerfile: Dockerfiles/app.Dockerfile
+      dockerfile: Dockerfiles/url-shortener.Dockerfile
     environment:
       - JWT_SECRET=${JWT_SECRET}
       - ARANGO_URL=${ARANGO_URL}
@@ -39,5 +39,5 @@ services:
       - "80:80"
     depends_on:
       - auth
-      - app
+      - url-shortener
       - gui

@@ -1,0 +1,18 @@
+# Specify manifest version
+apiVersion: v1
+# Resource is a service
+kind: Service
+metadata:
+  # Name of the service (kubectl get services)
+  name: app-url-shortener
+  # Labels for selecting the service
+  labels:
+    run: app-url-shortener
+spec:
+  # Service exposes default flask port
+  ports:
+  - port: 5000
+    protocol: TCP
+  selector:
+    # Selects all pods with the following key-value pair
+    run: app-url-shortener
