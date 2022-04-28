@@ -25,9 +25,9 @@ if [ "$1" == "up" ]; then
     echo "Waiting for CNI to be ready..."
     sleep 5
     kubectl wait --for=condition=ready pod -l k8s-app=calico-node -n kube-system --timeout=120s
-    echo "Setting up ingress controller..."
-    kubectl apply -f $ingress_controller_manifest_url
-    echo "Waiting for ingress controller to be ready..."
+    #echo "Setting up ingress controller..."
+    #kubectl apply -f $ingress_controller_manifest_url
+    #echo "Waiting for ingress controller to be ready..."
     sleep 5
     kubectl wait --namespace ingress-nginx \
         --for=condition=ready pod \
