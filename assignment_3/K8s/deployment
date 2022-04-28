@@ -13,7 +13,7 @@ if [ "$1" != "up" ] && [ "$1" != "down" ]; then
 fi
 
 # cni_manifest_url=https://docs.projectcalico.org/manifests/calico.yaml
-ingress_controller_manifest_url=https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/cloud/deploy.yaml
+ingress_controller_manifest_url=https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/deploy.yaml
 
 cd "$(dirname "$0")"
 
