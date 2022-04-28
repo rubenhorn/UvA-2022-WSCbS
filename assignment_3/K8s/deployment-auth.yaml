@@ -21,7 +21,7 @@ spec:
       containers:
       - name: app-auth
         # Specify image tag for container
-        image: group6/auth
+        image: luoabd/group6-auth
         # Image is not available in the public docker registry -> use local image
         imagePullPolicy: Never
         # Set environment variables from secret

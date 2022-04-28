@@ -1,8 +1,5 @@
 #! /bin/bash
 
-set -e
-
-# Check if docker is installed
 if ! [ -x "$(command -v docker)" ]; then
   echo 'Error: docker is not installed.' >&2
   exit 1
@@ -13,11 +10,6 @@ dockerhub_username="luoabd"
 
 for file in $(ls *.Dockerfile); do
     image_tag="$dockerhub_username/group6-$(echo $file | cut -d'.' -f1)"
-    echo "Building image $image_tag..."
-    docker build -f $file -t $image_tag ..
+    echo "Pushing image $image_tag..."
+    docker push $image_tag
 done
-
-echo -e "\nReport:"
-docker images | grep ^$dockerhub_username/group6-
-
-echo -e "\nDone"

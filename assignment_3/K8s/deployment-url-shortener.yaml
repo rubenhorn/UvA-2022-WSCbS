@@ -21,7 +21,7 @@ spec:
       containers:
       - name: app-url-shortener
         # Specify image tag for container
-        image: group6/url-shortener
+        image: luoabd/group6-url-shortener
         # Image is not available in the public docker registry -> use local image
         imagePullPolicy: Never
         # Set environment variables from secret
