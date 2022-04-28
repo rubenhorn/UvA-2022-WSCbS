@@ -28,11 +28,11 @@ if [ "$1" == "up" ]; then
     #echo "Setting up ingress controller..."
     #kubectl apply -f $ingress_controller_manifest_url
     #echo "Waiting for ingress controller to be ready..."
-    sleep 5
-    kubectl wait --namespace ingress-nginx \
-        --for=condition=ready pod \
-        --selector=app.kubernetes.io/component=controller \
-        --timeout=120s
+    # sleep 5
+    # kubectl wait --namespace ingress-nginx \
+    #     --for=condition=ready pod \
+    #     --selector=app.kubernetes.io/component=controller \
+    #     --timeout=120s
     echo "Creating resources..."
     for file in $(ls *.yaml); do
         kubectl apply -f $file
