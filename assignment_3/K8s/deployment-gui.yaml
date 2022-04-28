@@ -22,8 +22,6 @@ spec:
       - name: app-gui
         # Specify image tag for container
         image: luoabd/group6-gui
-        # Image is not available in the public docker registry -> use local image
-        imagePullPolicy: Never
         # Open default HTTP port on the container/pod
         ports:
         - containerPort: 80
