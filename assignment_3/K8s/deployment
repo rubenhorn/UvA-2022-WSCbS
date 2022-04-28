@@ -12,6 +12,7 @@ if [ "$1" != "up" ] && [ "$1" != "down" ]; then
     exit 1
 fi
 
+cni_manifest_url=https://docs.projectcalico.org/manifests/calico.yaml
 ingress_controller_manifest_url=https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/cloud/deploy.yaml
 
 cd "$(dirname "$0")"
@@ -19,9 +20,15 @@ cd "$(dirname "$0")"
 # Set up
 if [ "$1" == "up" ]; then
     set -e
+    echo "Setting up CNI..."
+    kubectl apply -f $cni_manifest_url
+    echo "Waiting for CNI to be ready..."
+    sleep 5
+    kubectl wait --for=condition=ready pod -l k8s-app=calico-node -n kube-system --timeout=120s
     echo "Setting up ingress controller..."
     kubectl apply -f $ingress_controller_manifest_url
     echo "Waiting for ingress controller to be ready..."
+    sleep 5
     kubectl wait --namespace ingress-nginx \
         --for=condition=ready pod \
         --selector=app.kubernetes.io/component=controller \
@@ -36,7 +43,10 @@ else # Tear down
         kubectl delete -f $file 2>/dev/null || echo "No resources to delete for $file"
     done
     # Keep the ingress controller running, so it doesn't take as much time to recreate the deployment
+    # echo "Deleting ingress controller..."
     # kubectl delete -f $ingress_controller_manifest_url
+    # echo "Deleting CNI..."
+    # kubectl delete -f $cni_manifest_url
 fi
 
 echo -e "\nCluster resources:"
