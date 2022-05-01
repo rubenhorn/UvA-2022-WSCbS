@@ -11,10 +11,12 @@ metadata:
   # Use same namespace as the ingress controller
   namespace: ingress-nginx
 spec:
+  # Expose the service on the given port on all nodes for traffic from outside of the cluster
+  type: NodePort
   # Service exposes default HTTP port of ingress controller pod on all nodes
   ports:
-  - targetPort: 80
-    protocol: TCP
+  - port: 80
+    targetPort: 80
     nodePort: 30001
   selector:
     # Selects all pods with the following key-value pairs
