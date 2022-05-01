@@ -1,0 +1,24 @@
+# Specify manifest version
+apiVersion: v1
+# Resource is a service of type NodePort
+kind: Service
+metadata:
+  # Name of the service (kubectl get services)
+  name: nodeport-ingress-controller
+  # Labels for selecting the service
+  labels:
+    run: nodeport-ingress-controller
+  # Use same namespace as the ingress controller
+  namespace: ingress-nginx
+spec:
+  # Service exposes default HTTP port of ingress controller pod on all nodes
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    nodePort: 30001
+  selector:
+    # Selects all pods with the following key-value pairs
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
