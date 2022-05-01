@@ -24,5 +24,4 @@ Start the complete app on http://localhost/gui/ with `docker compose up --build`
 ## Deploy app to Kubernetes cluster
 1. Build images as described above.
 2. Deploy the app to a Kubernetes cluster with `./K8s/deployment up`.
-3. Run the external load balancer with `docker run --rm --mount src="$(pwd)/load-balancer",target=/etc/nginx/conf.d,type=bind -p 80:80 nginx`.
-
+3. Run the external load balancer with `docker run -d --mount src="$(pwd)/load-balancer",target=/etc/nginx/conf.d,type=bind -p 80:80 --name load-balancer --restart unless-stopped nginx`.
