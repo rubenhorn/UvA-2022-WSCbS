@@ -22,6 +22,8 @@ spec:
       - name: app-auth
         # Specify image tag for container
         image: luoabd/group6-auth
+        # Make sure to use the latest version of the image
+        imagePullPolicy: Always
         # Set environment variables from secret
         env:
           - name: JWT_SECRET

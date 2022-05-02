@@ -22,6 +22,8 @@ spec:
       - name: app-url-shortener
         # Specify image tag for container
         image: luoabd/group6-url-shortener
+        # Make sure to use the latest version of the image
+        imagePullPolicy: Always
         # Set environment variables from secret
         env:
           - name: APP_SECRET

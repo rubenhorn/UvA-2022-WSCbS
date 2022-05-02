@@ -22,6 +22,8 @@ spec:
       - name: app-gui
         # Specify image tag for container
         image: luoabd/group6-gui
+        # Make sure to use the latest version of the image
+        imagePullPolicy: Always
         # Open default HTTP port on the container/pod
         ports:
         - containerPort: 80
