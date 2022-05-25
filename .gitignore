@@ -27,5 +27,8 @@ pip-selfcheck.json
 *.csv
 *.png
 *.pdf
+*.txt
 # Except for literture query results
 !literature_study/papers.csv
+# And requirements
+!**/requirements.txt

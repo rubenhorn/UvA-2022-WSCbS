@@ -4,7 +4,6 @@ from pathlib import Path
 import sys
 import pandas as pd
 import requests
-import random
 
 search_terms = [
     { 'term': 'idaas', 'is_primary': True },
@@ -12,8 +11,8 @@ search_terms = [
     { 'term': 'federated identity management', 'is_primary': True },
     { 'term': 'decentralized identity management', 'is_primary': True },
     { 'term': 'self-sovereign identity', 'is_primary': True },
-    { 'term': 'identity and access management', 'is_primary': True },
-    { 'term': 'identity management', 'is_primary': True },
+    { 'term': 'identity and access management', 'is_primary': False },
+    { 'term': 'identity management', 'is_primary': False },
 ]
 
 checkpoint = Path(__file__).parent / 'checkpoint.txt'
@@ -54,11 +53,11 @@ def search_papers(search_term):
     params['query'] = search_term
     params['fields'] = ','.join(['paperId', 'year', 'citationCount'])
     params['offset'] = 0 if checkpoint_offset == -1 else checkpoint_offset
+    params['fieldsOfStudy'] = 'Computer Science'
     checkpoint_offset = 0 # reset
     params['limit'] = 100
     json_resp = get_json_resp(requests.get(api_url, params=params))
-    total = json_resp['total']
-    print(total)
+    print(json_resp['total'])
     papers = json_resp['data']
     # print('   offset =',params['offset'], 'limit =', params['limit'], 'got', len(json_resp['data']))
     while json_resp is not None and 'next' in json_resp and json_resp['next'] > 0:
@@ -76,7 +75,7 @@ def search_papers(search_term):
     for paper in papers:
         papers_deduplicated[paper['paperId']] = paper
     papers = list(papers_deduplicated.values())
-    assert len(papers) == total, f'Expeted {total} papers, got {len(papers)}'
+    # assert len(papers) == total, f'Expeted {total} papers, got {len(papers)}'
     return papers
 
 
@@ -118,7 +117,7 @@ out_path = str(Path(__file__).parent / 'papers.csv')
 
 # Load existing data frame if it exists
 if Path(out_path).exists():
-    df_checkpoint = pd.read_csv(out_path, index_col=0)
+    df_checkpoint = pd.read_csv(out_path)
     df = df.append(df_checkpoint)
 
 # Remove duplicate rows (search term + paper id)
