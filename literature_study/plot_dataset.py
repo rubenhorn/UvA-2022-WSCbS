@@ -120,4 +120,9 @@ sns.heatmap(overlap, annot=True)
 plt.tight_layout()
 plt.savefig(out_dir / f'overlap{file_extension}')
 
-print('Done')
+print('number of publications', len(df))
+# print number of publications per term
+for term, group in grouped_by_term:
+    print(term, len(group), '({:.2f}%)'.format(100 * len(group) / len(df)))
+
+print('\nDone')
