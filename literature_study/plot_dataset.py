@@ -92,6 +92,8 @@ stats = pd.DataFrame({
     'mean_citation_counts': mean_citation_counts,
     'std_citation_counts': std_citation_counts
 })
+# Round columns to 2 decimals
+stats = stats.round(2)
 stats.to_csv(out_dir / 'stats.csv', index=False)
 
 # Count of papers per term as dictionary
