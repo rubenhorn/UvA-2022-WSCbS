@@ -22,3 +22,10 @@ pip-selfcheck.json
 
 # Compiled documents
 *.pdf
+
+# Data exports and plots
+*.csv
+*.png
+*.pdf
+# Except for literture query results
+!literature_study/papers.csv
