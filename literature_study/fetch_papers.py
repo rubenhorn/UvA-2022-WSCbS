@@ -51,9 +51,8 @@ def search_papers(search_term):
     api_url = 'https://api.semanticscholar.org/graph/v1/paper/search'
     params = dict()
     params['query'] = search_term
-    params['fields'] = ','.join(['paperId', 'year', 'citationCount'])
+    params['fields'] = ','.join(['paperId', 'year', 'citationCount','fieldsOfStudy'])
     params['offset'] = 0 if checkpoint_offset == -1 else checkpoint_offset
-    params['fieldsOfStudy'] = 'Computer Science'
     checkpoint_offset = 0 # reset
     params['limit'] = 100
     json_resp = get_json_resp(requests.get(api_url, params=params))
@@ -75,7 +74,8 @@ def search_papers(search_term):
     for paper in papers:
         papers_deduplicated[paper['paperId']] = paper
     papers = list(papers_deduplicated.values())
-    # assert len(papers) == total, f'Expeted {total} papers, got {len(papers)}'
+    # Filter papers to only include computer science related papers
+    papers = [p for p in papers if p['fieldsOfStudy'] is not None and 'Computer Science' in p['fieldsOfStudy']]
     return papers
 
 
