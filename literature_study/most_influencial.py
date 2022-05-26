@@ -23,8 +23,8 @@ for topic, group in grouped_by_topic:
     if not group['is_primary'].iloc[0]:
         continue
     print('\n', topic)
-    # Get the 3 most cited papers
-    most_cited = group.sort_values('citation_count', ascending=False).head(3)
+    # Get the n most cited papers
+    most_cited = group.sort_values('citation_count', ascending=False).head(5)
     for item in most_cited.itertuples():
         get_paper_url(item.paper_id)
 print('\nDone')
