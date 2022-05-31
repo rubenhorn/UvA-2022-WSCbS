@@ -111,12 +111,16 @@ for i, (term1, group1) in enumerate(grouped_by_term):
         # Normalize by row
         overlap[i, j] /= counts[i]
 # Convert overlap to dataframe
-overlap = pd.DataFrame(overlap, index=grouped_by_term.groups.keys(), columns=grouped_by_term.groups.keys())
+labels = grouped_by_term.groups.keys()
+# 'decentralized identity management', 'federated identity management', 'idaas', 'identity and access management', 'identity management', 'self-sovereign identity'
+labels = ['dim', 'fim', 'idaas', 'iam', 'im', 'ssi']
+overlap = pd.DataFrame(overlap, index=labels, columns=labels)
 # Plot matrix
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(5, 3))
 # Title
 ax.set_title('Overlap of publications normalized by row')
-sns.heatmap(overlap, annot=True)
+sns.heatmap(overlap, annot=True, cbar=False)
+plt.yticks(rotation=0) 
 plt.tight_layout()
 plt.savefig(out_dir / f'overlap{file_extension}')
 
