@@ -10,8 +10,8 @@ file_extension = '.pdf'
 
 # load data
 df = pd.read_csv(out_dir / 'papers.csv')
-# Drop publications before 1980
-year_min = 1980
+# Drop publications before 1990
+year_min = 1990
 year_max = 2022
 df = df[df['year'] >= year_min]
 df = df[df['year'] <= year_max]
@@ -24,14 +24,16 @@ fig, ax = plt.subplots(figsize=(10, 6))
 # Iterate over groups
 legend = []
 markers = ['o', 'v', '^', '<', '>', 's', 'p', '*', 'h', 'H', 'D', 'd']
+abbr = ['dim', 'fim', '', 'iam', 'im', 'ssi']
 for i, (term, group) in enumerate(grouped_by_term):
-    legend.append(term)
+    legend_term = f'{term} ({abbr[i]})' if len(abbr[i]) > 0 else term
+    legend.append(legend_term)
     # Compute value counts (year)
     counts = group['year'].value_counts()
     # Sort by index
     counts = counts.sort_index()
     # Plot counts
-    ax.plot(counts.index, counts.values, label=term, marker=markers[i])
+    ax.plot(counts.index, counts.values, label=legend_term, marker=markers[i])
 # Add legend
 ax.legend(legend)
 # Add title
@@ -48,13 +50,14 @@ fig, ax = plt.subplots(figsize=(10, 6))
 # Iterate over groups
 legend = []
 for i, (term, group) in enumerate(grouped_by_term):
-    legend.append(term)
+    legend_term = f'{term} ({abbr[i]})' if len(abbr[i]) > 0 else term
+    legend.append(legend_term)
     # Compute value counts (year)
     counts = group['year'].value_counts()
     # Sort by index
     counts = counts.sort_index()
     # Plot counts
-    ax.plot(counts.index, counts.values / counts.sum(), label=term, marker=markers[i])
+    ax.plot(counts.index, counts.values / counts.sum(), label=legend_term, marker=markers[i])
 # Add legend
 ax.legend(legend)
 # Add title
